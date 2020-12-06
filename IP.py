@@ -42,3 +42,4 @@ def get_ip():
     ip_list = get_ip_list(url, headers=headers)
     proxies = get_random_ip(ip_list)
     return proxies
+print(get_ip())
