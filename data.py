@@ -2,7 +2,7 @@
 
 from spider import spider
 import os
-def get_data():
+def get_data(locals):
     location = {"杭州":'080200',
                 "上海":'020000',
                 "北京":'010000',
@@ -21,7 +21,8 @@ def get_data():
                 '大连':'230300',
                 '长春':'240200'
                 }
-    for local,local_code in location.items():
+    for local in locals:
+        local_code = location[local]
         if not os.path.exists('data'):
             os.mkdir('data')
         file = 'data\\{}.csv'.format(local)
@@ -40,4 +41,4 @@ def get_data():
             spider(url,file)
             print("保存成功！", end=" ")
             print("location:{},page={}".format(local, page))
-get_data()
+# get_data()
