@@ -46,4 +46,4 @@ def welfare_wordCloud(data_locals):
                       collocations=False).generate(total)
     plt.imshow(wordcloud)
     plt.axis("off")
-    wordcloud.to_file("view\\wordcloud\\福利词云图\\中国地区福利.png")
+    wordcloud.to_file("view\\wordcloud\\福利词云图\\全部福利.png")

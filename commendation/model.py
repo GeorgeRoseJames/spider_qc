@@ -129,9 +129,5 @@ print('使用SVM预测数据的Cohen’s Kappa系数为：',
 #       f1_score(_target_test, _target_predict, average='micro'))
 # print('使用SVM预测breast_cancer数据的Cohen’s Kappa系数为：',
 #       cohen_kappa_score(_target_test, _target_predict))
-# # 使用SVM预测breast_cancer数据的准确率为： 0.9966957044157405
-# # 使用SVM预测breast_cancer数据的精确率为： 0.9966957044157405
-# # 使用SVM预测breast_cancer数据的召回率为： 0.9966957044157405
-# # 使用SVM预测breast_cancer数据的F1值为： 0.9966957044157405
-# # 使用SVM预测breast_cancer数据的Cohen’s Kappa系数为： 0.9944571272361682
+# 性能太差，不采用
 #

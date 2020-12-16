@@ -36,7 +36,7 @@ def work_area_wordCloud(data_locals):
     wordcloud = WordCloud(mask =maskph,  background_color="white",font_path = "msyh.ttc", width=1000, height=860, margin=2,collocations=False).generate(total)
     plt.imshow(wordcloud)
     plt.axis("off")
-    wordcloud.to_file("view\\wordcloud\\工作领域词云图\\中国地区.png")
+    wordcloud.to_file("view\\wordcloud\\工作领域词云图\\全部福利.png")
 #wordcloud版本为1.8.1
 #matplotlib版本为3.3.2
 #PIL版本为8.0.0
