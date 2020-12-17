@@ -1,9 +1,13 @@
 # coding=gbk
-
+import jieba
+import joblib
 import pandas as pd
 import sys
 import numpy as np
 import os
+
+from sklearn.feature_extraction.text import TfidfVectorizer
+
 from view.wordcloud.welfare_wordCloud import welfare_wordCloud
 from view.wordcloud.work_area_wordCloud import work_area_wordCloud
 # from pylab import mpl
@@ -50,7 +54,7 @@ def data_clear(locals):
             # data = data.drop(['薪资'],axis=1)
             # 删除大于200的异常数据
             data = data[data['最高薪资'] < 200]
-            print(data['最高薪资'].describe())
+            # print(data['最高薪资'].describe())
             # print(np.min(data['最高薪资']))
             # test = data.loc[:,['最高薪资','平均薪资','最低薪资']]
             # test.boxplot()
@@ -77,35 +81,46 @@ def data_clear(locals):
     # 生成词云
     work_area_wordCloud(dic_data)
     welfare_wordCloud(dic_data)
-    # 相似性判断 第一次数据清洗用到 后续用分类算法
-    # list_test = list(welfare_set)
-    # from sklearn.feature_extraction.text import TfidfVectorizer
-    # from sklearn.cluster import KMeans
-    # import jieba
+    # 福利词分类
+    # 语料库不全,放弃
+    # # 加载分类模型
+    # model = joblib.load('commendation\\welfare_predict.pkl')
+    #
     # def jieba_tokenize(text):
     #     return jieba.lcut(text)
-    # tfidf_vectorizer = TfidfVectorizer(tokenizer=jieba_tokenize, lowercase=False)
-    # tfidf_matrix = tfidf_vectorizer.fit_transform(list_test)
-    # # 聚类簇，分为12类
-    # num_clusters = 12
-    # km_cluster = KMeans(n_clusters=num_clusters, max_iter=300, n_init=60, init='k-means++', n_jobs=-1)
-    # result = km_cluster.fit_predict(tfidf_matrix)
     #
-    # result_list = []
+    # tfidf_vectorizer = TfidfVectorizer(tokenizer=jieba_tokenize, lowercase=False)
+    # welfare_data = tfidf_vectorizer.fit_transform(list(welfare_set)).toarray()
+
+
+    # 相似性判断 第一次数据清洗用到 后续用分类算法，继续用
+    list_test = list(welfare_set)
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.cluster import KMeans
+    def jieba_tokenize(text):
+        return jieba.lcut(text)
+    tfidf_vectorizer = TfidfVectorizer(tokenizer=jieba_tokenize, lowercase=False)
+    tfidf_matrix = tfidf_vectorizer.fit_transform(list_test)
+    # 聚类簇，分为12类
+    num_clusters = 12
+    km_cluster = KMeans(n_clusters=num_clusters, max_iter=300, n_init=60, init='k-means++', n_jobs=-1)
+    result = km_cluster.fit_predict(tfidf_matrix)
+
+    result_list = []
+    for i in range(num_clusters):
+        result_list.append([])
+    # print(len(result))
+    for i,j in zip(result,list_test):
+        result_list[i].append(j)
     # for i in range(num_clusters):
-    #     result_list.append([])
-    # # print(len(result))
-    # for i,j in zip(result,list_test):
-    #     result_list[i].append(j)
-    # # for i in range(num_clusters):
-    # #     print(result_list[i])
-    # # 存储
-    # with open('commendation\\classify_welfare.txt','w') as f:
-    #     for i in range(num_clusters):
-    #         f.writelines(' '.join(result_list[i]))
-    #         f.write('\n')
-    #         #print(list_test[i].join(" "))
-    #     f.close()
+    #     print(result_list[i])
+    # 存储
+    with open('commendation\\classify_welfare.txt','w') as f:
+        for i in range(num_clusters):
+            f.writelines(' '.join(result_list[i]))
+            f.write('\n')
+            #print(list_test[i].join(" "))
+        f.close()
 # dict_data = dict()
 # locals = ["杭州","上海","北京","广州","深圳",'武汉','宁波',"苏州",'南京','长沙','成都','重庆','昆明','西安','哈尔滨','长春']
 # data_clear(dict_data,locals)

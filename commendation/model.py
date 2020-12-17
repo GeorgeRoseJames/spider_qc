@@ -21,7 +21,7 @@ from sklearn.multiclass import OutputCodeClassifier
 data_list = []
 with open('classify_welfare.txt','r') as f:
     for line in f:
-        data_list.append(line.split(" "))
+        data_list.append(line.replace("\n","").split(" "))
 # print(data_list)
 welfare_target = []
 for data,i in zip(data_list,range(12)):
@@ -36,6 +36,7 @@ tfidf_vectorizer = TfidfVectorizer(tokenizer=jieba_tokenize, lowercase=False)
 welfare_word = []
 for data in data_list:
     welfare_word.extend(data)
+print(welfare_word)
 welfare_data = tfidf_vectorizer.fit_transform(welfare_word).toarray()
 
 print(welfare_data)

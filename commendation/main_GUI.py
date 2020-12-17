@@ -24,19 +24,8 @@ class GUI:
         # 读取数据
         self.__data = dict()
         self.locals = ["杭州","上海","北京","广州","深圳",'武汉','宁波',"苏州",'南京','长沙','成都','重庆','昆明','西安','哈尔滨','长春','全部']
-
-        # for local in self.locals[:-2]:
-        #     self.__data[local] = pd.read_csv("commendation\\clear_data\\{}.csv".format(local), encoding='gbk')
         self.__image_worldcloud = [[],[]]
-        # wordarea
-        for local in self.locals:
-            self.__image_worldcloud[0].append(
-                ImageTk.PhotoImage(Image.open('view\\wordcloud\\工作领域词云图\\{}.png'.format(local)).resize((800,550))))
-        # welfare
-        for local in self.locals:
-            self.__image_worldcloud[1].append(
-                ImageTk.PhotoImage(Image.open('view\\wordcloud\\福利词云图\\{}福利.png'.format(local)).resize((800,550))))
-
+        self.load_data('全部')
 
 
 
@@ -53,7 +42,7 @@ class GUI:
         button_wordCloud = Button(frame_operation,text='词云',height=4,width=20,bd=20,font=('534E658769774F53', 20),command = self.wordcloud)
         button_graphics = Button(frame_operation,text='数据分析图表',height=4,width=20,bd=20,font=('534E658769774F53', 20))
         button_commendation = Button(frame_operation,text='推荐',height=4,width=20,bd=20,font=('534E658769774F53', 20))
-        button_welfare = Button(frame_operation,text='福利',height=4,width=20,bd=20,font=('534E658769774F53', 20))
+        button_welfare = Button(frame_operation,text='福利',height=4,width=20,bd=20,font=('534E658769774F53', 20),command=self.show_welfare)
         button_updata.grid(row=0,column=0,sticky=W+E+S+N)
         button_updata.grid_propagate(0)
         button_wordCloud.grid(row=1,column=0,sticky=W+E+S+N)
@@ -81,6 +70,28 @@ class GUI:
         self.show_table = TableCanvas(table)
         self.show_data()
         mainloop()
+
+
+    def load_data(self,local):
+        # 加载数据
+        if local=='全部':
+            for local in self.locals[:-2]:
+                self.__data[local] = pd.read_csv("commendation\\clear_data\\{}.csv".format(local), encoding='gbk')
+
+            self.__image_worldcloud = [[], []]
+            for local in self.locals:
+                self.__image_worldcloud[0].append(
+                    ImageTk.PhotoImage(Image.open('view\\wordcloud\\工作领域词云图\\{}.png'.format(local)).resize((800,550))))
+            # welfare
+            for local in self.locals:
+                self.__image_worldcloud[1].append(
+                    ImageTk.PhotoImage(Image.open('view\\wordcloud\\福利词云图\\{}福利.png'.format(local)).resize((800,550))))
+        else:
+            self.__data[local] = pd.read_csv("commendation\\clear_data\\{}.csv".format(local), encoding='gbk')
+            index = self.locals.index(local)
+            self.__image_worldcloud[0][index]=ImageTk.PhotoImage(Image.open('view\\wordcloud\\工作领域词云图\\{}.png'.format(local)).resize((800, 550)))
+            self.__image_worldcloud[1][index]=ImageTk.PhotoImage(Image.open('view\\wordcloud\\福利词云图\\{}福利.png'.format(local)).resize((800, 550)))
+
     def show_data(self):
         # 在显示框显示数据
         data = self.__combobox_show.get()
@@ -95,11 +106,16 @@ class GUI:
             local = combobox_updata.get()
             # print(local)
             if local == '全部':
+                # 爬起数据
                 data.get_data(self.locals)
+                # 数据处理
                 value.data_clear(self.locals)
+                # 重新加载数据
+                self.load_data('全部')
             else:
                 data.get_data([local])
                 value.data_clear([local])
+                self.load_data(local)
 
             finish_updata = messagebox.askokcancel("提示！",'更新完毕!\nok退出!\ncancel继续更新!')
             if finish_updata:
@@ -195,7 +211,8 @@ class GUI:
         workarea_wordcloud_button.pack(side=LEFT)
         last_wordcloud_button.pack(side=LEFT)
         next_wordcloud_button.pack(side=LEFT)
-
+    def show_welfare(self):
+        pass
 
 
 GUI()
