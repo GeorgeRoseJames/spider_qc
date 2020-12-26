@@ -54,6 +54,7 @@ def data_clear(locals):
             # data = data.drop(['薪资'],axis=1)
             # 删除大于200的异常数据
             data = data[data['最高薪资'] < 200]
+            data = data.reset_index(drop=True)
             # print(data['最高薪资'].describe())
             # print(np.min(data['最高薪资']))
             # test = data.loc[:,['最高薪资','平均薪资','最低薪资']]
@@ -73,7 +74,7 @@ def data_clear(locals):
             # print(len(fuli_set))
             # out:2703
             #储存数据
-            data.to_csv('sample\\data\\clear{}.csv'.format(local), encoding='gbk')
+            data.to_csv('commendation\\data\\clear{}.csv'.format(local), encoding='gbk',index=False)
             dic_data.update({local:data})
             #print(welfare_set)
 
