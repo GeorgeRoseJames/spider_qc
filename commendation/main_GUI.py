@@ -1,16 +1,17 @@
 # coding=gbk
 # https://blog.csdn.net/weixin_43849588/article/details/103825624
 # https://github.com/dmnfarrell/tkintertable/wiki/Usage
+
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 import pandas as pd
 import value
-import data
 import os
 from tkintertable import TableCanvas
 from PIL import Image, ImageTk
 import jieba
+from view.graphics import functions as fc
 
 
 class GUI:
@@ -26,6 +27,7 @@ class GUI:
                        "苏州", '南京', '长沙', '成都', '重庆', '昆明', '西安',
                        '哈尔滨', '长春', '全部']
         self.__image_worldcloud = [[], []]
+        self.__image_graphics = [[], []]
         self.load_data('全部')
 
         # two Frame,one for operation,another for show image and data
@@ -42,7 +44,7 @@ class GUI:
         button_wordcloud = Button(frame_operation, text='词云', height=4, width=20, bd=20,
                                   font=('534E658769774F53', 20), command=self.wordcloud)
         button_graphics = Button(frame_operation, text='数据分析图表', height=4, width=20, bd=20,
-                                 font=('534E658769774F53', 20), command=self.show_datafigure)
+                                 font=('534E658769774F53', 20), command=self.show_graphics)
         button_commendation = Button(frame_operation, text='推荐', height=4, width=20, bd=20,
                                      font=('534E658769774F53', 20), command=self.commendation)
         button_welfare = Button(frame_operation, text='福利', height=4, width=20, bd=20,
@@ -83,21 +85,34 @@ class GUI:
                                                  encoding='gbk', index_col=0)
 
             self.__image_worldcloud = [[], []]
+            self.__image_graphics = [[], []]
             for local in self.locals:
                 self.__image_worldcloud[0].append(
                     ImageTk.PhotoImage(Image.open('view\\wordcloud\\工作领域词云图\\{}.png'
                                                   .format(local)).resize((800, 550))))
+                if local != '全部':
+                    self.__image_graphics[0].append(
+                        ImageTk.PhotoImage(Image.open('view\\graphics\\networks\\{}.png'
+                                                      .format(local)).resize((800, 550))))
             # welfare
             for local in self.locals:
                 self.__image_worldcloud[1].append(
                     ImageTk.PhotoImage(Image.open('view\\wordcloud\\福利词云图\\{}福利.png'
                                                   .format(local)).resize((800, 550))))
+                if local != '全部':
+                    self.__image_graphics[1].append(
+                        ImageTk.PhotoImage(Image.open('view\\graphics\\histogram\\{}.png'
+                                                      .format(local)).resize((800, 550))))
         else:
             self.__data[local] = pd.read_csv("commendation\\clear_data\\{}.csv".format(local), encoding='gbk')
             index = self.locals.index(local)
             self.__image_worldcloud[0][index] = ImageTk.PhotoImage(Image.open('view\\wordcloud\\工作领域词云图\\{}.png'
                                                                               .format(local)).resize((800, 550)))
             self.__image_worldcloud[1][index] = ImageTk.PhotoImage(Image.open('view\\wordcloud\\福利词云图\\{}福利.png'
+                                                                              .format(local)).resize((800, 550)))
+            self.__image_graphics[0][index] = ImageTk.PhotoImage(Image.open('view\\graphics\\networks\\{}.png'
+                                                                              .format(local)).resize((800, 550)))
+            self.__image_graphics[1][index] = ImageTk.PhotoImage(Image.open('view\\graphics\\histogram\\{}.png'
                                                                               .format(local)).resize((800, 550)))
 
     def show_data(self):
@@ -116,12 +131,14 @@ class GUI:
                 # 爬起数据
                 data.get_data(self.locals[:-1])
                 # 数据处理
-                value.data_clear(self.locals)
+                value.data_clear(self.locals[:-1])
+                fc.main(self.locals[:-1])
                 # 重新加载数据
                 self.load_data('全部')
             else:
                 data.get_data([local])
                 value.data_clear([local])
+                fc.main([local])
                 self.load_data(local)
 
             finish_updata = messagebox.askokcancel("提示！", '更新完毕!\nok退出!\ncancel继续更新!')
@@ -194,7 +211,7 @@ class GUI:
             label.configure(text=self.locals[index])
 
         def change_image0():
-            print('ok')
+            # print('ok')
             # 下一张
             global condition
             global image
@@ -240,8 +257,80 @@ class GUI:
             f.close()
         text_welfare['state'] = DISABLED
 
-    def show_datafigure(self):
-        pass
+    def show_graphics(self):
+        # 显示图片
+        image = self.__image_graphics[0][0]
+        title = '杭州'
+        condition = 0
+
+        # 显示图表
+        window_graphics = Toplevel(self.__window)
+        window_graphics.geometry('800x600')
+        window_graphics.title('graphics')
+
+        # 两个容器，放操作键和显示画面
+        frame_operator = Frame(window_graphics, relief="sunken", bg='white')
+        frame_show = Frame(window_graphics, relief="sunken", bg='white')
+        frame_show.pack(fill=BOTH, expand=1)
+        frame_operator.pack()
+
+        # 画面显示
+        image_label = Label(frame_show, image=image, anchor=CENTER)
+        image_label.pack()
+
+        def show_img_True():
+            # welfare
+            global condition
+            global image
+            # print('ok')
+            image = self.__image_graphics[1][0]
+            condition = 1
+            image_label.configure(image=image)
+
+        def show_img_False():
+            # workarea
+            global condition
+            global image
+            # print('ok')
+            image = self.__image_graphics[0][0]
+            condition = 0
+            image_label.configure(image=image)
+
+        def change_image1():
+            # print('ok')
+            # 上一张
+            global condition
+            global image
+            index = self.__image_graphics[condition].index(image) - 1
+            image = self.__image_graphics[condition][index]
+            image_label.configure(image=image)
+            label.configure(text=self.locals[index])
+
+        def change_image0():
+            # print('ok')
+            # 下一张
+            global condition
+            global image
+            index = (self.__image_graphics[condition].index(image) + 1) % 16
+            image = self.__image_graphics[condition][index]
+            image_label.configure(image=image)
+            label.configure(text=self.locals[index])
+
+        # 操作按钮
+        welfare_graphics_button = Button(frame_operator, text='networks', command=show_img_False)
+        workarea_graphics_button = Button(frame_operator, text='histogram', command=show_img_True)
+        last_graphics_button = Button(frame_operator,
+                                       text="上一张",
+                                       command=change_image1)
+        next_graphics_button = Button(frame_operator,
+                                       text="下一张",
+                                       command=change_image0)
+        label = Label(frame_operator, text=title)
+        label.pack(side=LEFT)
+        welfare_graphics_button.pack(side=LEFT)
+        workarea_graphics_button.pack(side=LEFT)
+        last_graphics_button.pack(side=LEFT)
+        next_graphics_button.pack(side=LEFT)
 
 
     def commendation(self):
@@ -307,8 +396,10 @@ class GUI:
             if combobox_location.get() == "全部":
                 data = pd.concat(self.__data.values())
                 data = data.reset_index(drop=True)
+                self.__combobox_show.set(combobox_location.get())
             else:
                 data = self.__data[combobox_location.get()]
+                self.__combobox_show.set(combobox_location.get())
             # 推荐工作
             if entry_work.get() != "":
                 work = entry_work.get()
