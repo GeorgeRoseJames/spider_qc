@@ -64,7 +64,7 @@ def IMPoverview1(loc):
     nx.draw(G, pos, node_color=('#7fa7e8'), node_size=2000,
             edge_color=('#7fa7e8'), width=[float(v['weight']) / 600 for (r, c, v) in G.edges(data=True)], with_labels=True, font_size=15, alpha=0.6)
 #    plt.savefig('view\\viewer\\networks{}.png'.format(loc))
-    plt.savefig('graphics\\networks\\{}.png'.format(loc), bbox_inches='tight')
+    plt.savefig('view\\graphics\\networks\\{}.png'.format(loc), bbox_inches='tight')
 
 
 # 根据薪水取上下限得到low high新的两列
@@ -110,7 +110,7 @@ def IMPoverview2(loc):
     plt.ylabel("万元")
     plt.title('最高工资不高于40W元不同工作类的薪资分布对比')
 #    plt.savefig('view\\viewer\\histogram{}.png'.format(loc))
-    plt.savefig('graphics\\histogram\\{}.png'.format(loc), bbox_inches='tight')
+    plt.savefig('view\\graphics\\histogram\\{}.png'.format(loc), bbox_inches='tight')
 
 
 # IMPoverview1()
@@ -123,7 +123,7 @@ def main(locals):
     # 自动补全缺失数据为NaN
     global df
     for local in locals:
-        df = pd.read_csv('{}.csv'.format(local), names=['job', 'company', 'salary', 'location', 'NOTC', 'needing', 'lable', 'welfare', 'requirement'],
+        df = pd.read_csv('data\\{}.csv'.format(local), names=['job', 'company', 'salary', 'location', 'NOTC', 'needing', 'lable', 'welfare', 'requirement'],
                          keep_default_na=False, encoding='gbk')
         df['subdivide'] = df['lable'].apply(subdivide)
         df['low'] = df['salary'].apply(getLow)
@@ -133,6 +133,6 @@ def main(locals):
 
 '''
 ll = ["杭州", "上海", "北京", "广州", "深圳", '武汉', '宁波', "苏州",
-          '南京', '长沙', '成都', '重庆', '昆明', '西安', '哈尔滨', '长春']
+          '南京', '长沙', '成都', '重庆', '昆明', '西安', '哈尔滨', '长春', '大连']
 main(ll)
 '''

@@ -74,7 +74,7 @@ def data_clear(locals):
             # print(len(fuli_set))
             # out:2703
             #储存数据
-            data.to_csv('commendation\\data\\clear{}.csv'.format(local), encoding='gbk',index=False)
+            data.to_csv('commendation\\clear_data\\{}.csv'.format(local), encoding='gbk',index=False)
             dic_data.update({local:data})
             #print(welfare_set)
 
@@ -122,6 +122,6 @@ def data_clear(locals):
             f.write('\n')
             #print(list_test[i].join(" "))
         f.close()
-# dict_data = dict()
-# locals = ["杭州","上海","北京","广州","深圳",'武汉','宁波',"苏州",'南京','长沙','成都','重庆','昆明','西安','哈尔滨','长春']
-# data_clear(dict_data,locals)
+
+# locals = ["杭州","上海","北京","广州","深圳",'武汉','宁波',"苏州",'南京','长沙','成都','重庆','昆明','西安','哈尔滨','长春','大连']
+# data_clear(locals)

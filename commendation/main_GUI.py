@@ -25,7 +25,7 @@ class GUI:
         self.__data = dict()
         self.locals = ["杭州", "上海", "北京", "广州", "深圳", '武汉', '宁波',
                        "苏州", '南京', '长沙', '成都', '重庆', '昆明', '西安',
-                       '哈尔滨', '长春', '全部']
+                       '哈尔滨', '长春', '大连', '全部']
         self.__image_worldcloud = [[], []]
         self.__image_graphics = [[], []]
         self.load_data('全部')
@@ -82,7 +82,7 @@ class GUI:
         if local == '全部':
             for local in self.locals[:-1]:
                 self.__data[local] = pd.read_csv("commendation\\clear_data\\{}.csv".format(local),
-                                                 encoding='gbk', index_col=0)
+                                                 encoding='gbk')
 
             self.__image_worldcloud = [[], []]
             self.__image_graphics = [[], []]
@@ -342,7 +342,7 @@ class GUI:
         label_location = Label(window_commendation, text='工作位置:')
         label_location.grid(row=0, column=0)
         combobox_location = ttk.Combobox(window_commendation)
-        combobox_location['value'] = self.locals[:-1]
+        combobox_location['value'] = self.locals
         combobox_location.current(0)
         combobox_location.grid(row=0, column=1, sticky=W)
 
@@ -404,12 +404,11 @@ class GUI:
             if entry_work.get() != "":
                 work = entry_work.get()
                 work = '|'.join(jieba.lcut(work, cut_all=True, HMM=True))
-                data = data[data["岗位"].str.contains(work)]
+                data = data[data['岗位'].str.contains(work)]
 
             # 推荐公司
             if entry_company.get() != "":
                 company = entry_company.get()
-                company = '|'.join(jieba.lcut(company, cut_all=True, HMM=True))
                 data = data[data['公司'].str.contains(company)]
 
             #公司性质
@@ -422,7 +421,6 @@ class GUI:
             # 福利
             if entry_welfare != '':
                 data = data[data['福利'].str.contains(entry_welfare.get(),na=False)]
-
             # 输出
             data = data.sort_values(by='平均薪资',ascending=False,kind='heapsort')
             data.to_csv("commendation\\commendation_data.csv",encoding='gbk',index=False)
